@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useMemo, Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import * as Cesium from 'cesium';
 
 // Dynamic imports for components that need client-side only rendering
 const Globe = dynamic(() => import('@/components/globe/Globe'), {
@@ -40,16 +39,9 @@ interface LayerState {
   lastUpdate: Date | null;
 }
 
-const INITIAL_LAYER_STATE: Record<string, LayerState> = {
-  satellites: { enabled: false, loading: false, error: null, count: 0, lastUpdate: null },
-  aviation: { enabled: false, loading: false, error: null, count: 0, lastUpdate: null },
-  traffic: { enabled: false, loading: false, error: null, count: 0, lastUpdate: null },
-  cctv: { enabled: false, loading: false, error: null, count: 0, lastUpdate: null },
-};
-
 export default function Home() {
-  // Viewer state
-  const [viewer, setViewer] = useState<Cesium.Viewer | null>(null);
+  // Viewer state - use unknown type to avoid Cesium import
+  const [viewer, setViewer] = useState<unknown>(null);
   
   // Visual mode state
   const [visualMode, setVisualMode] = useState<'normal' | 'crt' | 'nightVision' | 'thermal'>('normal');
@@ -125,7 +117,7 @@ export default function Home() {
   ]);
   
   // Handle viewer ready
-  const handleViewerReady = useCallback((v: Cesium.Viewer) => {
+  const handleViewerReady = useCallback((v: unknown) => {
     setViewer(v);
   }, []);
   
