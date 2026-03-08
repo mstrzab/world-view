@@ -78,38 +78,26 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* Tactical Theme Variables */
+.tactical-theme {
+  --tactical-bg: #0a0a0f;
+  --tactical-bg-secondary: #111118;
+  --tactical-bg-tertiary: #1a1a24;
+  --tactical-cyan: #00ffff;
+  --tactical-cyan-dim: #00cccc;
+  --tactical-cyan-glow: rgba(0, 255, 255, 0.3);
+  --tactical-green: #00ff88;
+  --tactical-green-dim: #00cc66;
+  --tactical-green-glow: rgba(0, 255, 136, 0.3);
+  --tactical-red: #ff3366;
+  --tactical-red-dim: #cc2952;
+  --tactical-red-glow: rgba(255, 51, 102, 0.3);
+  --tactical-orange: #ff9900;
+  --tactical-orange-glow: rgba(255, 153, 0, 0.3);
+  --tactical-text: #e0e0e0;
+  --tactical-text-dim: #888888;
+  --tactical-border: rgba(0, 255, 255, 0.2);
+  --tactical-border-bright: rgba(0, 255, 255, 0.5);
 }
 
 @layer base {
@@ -119,4 +107,483 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Tactical Base Styles */
+@layer components {
+  .tactical-panel {
+    background: linear-gradient(180deg, rgba(10, 10, 15, 0.95) 0%, rgba(17, 17, 24, 0.95) 100%);
+    border: 1px solid var(--tactical-border);
+    backdrop-filter: blur(10px);
+  }
+
+  .tactical-panel-glow {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.1),
+      inset 0 0 20px rgba(0, 255, 255, 0.02);
+  }
+
+  .tactical-border {
+    border: 1px solid var(--tactical-border);
+  }
+
+  .tactical-border-glow {
+    border: 1px solid var(--tactical-border-bright);
+    box-shadow: 0 0 10px var(--tactical-cyan-glow);
+  }
+
+  .tactical-text {
+    color: var(--tactical-text);
+    font-family: 'Courier New', monospace;
+  }
+
+  .tactical-text-cyan {
+    color: var(--tactical-cyan);
+    text-shadow: 0 0 10px var(--tactical-cyan-glow);
+  }
+
+  .tactical-text-green {
+    color: var(--tactical-green);
+    text-shadow: 0 0 10px var(--tactical-green-glow);
+  }
+
+  .tactical-text-dim {
+    color: var(--tactical-text-dim);
+  }
+
+  /* Glowing border animation */
+  .tactical-glow-border {
+    position: relative;
+  }
+
+  .tactical-glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--tactical-cyan), transparent, var(--tactical-cyan));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.5;
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  /* Scanline effect */
+  .scanline-overlay {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    z-index: 100;
+  }
+
+  /* CRT curve effect */
+  .crt-curve {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .crt-curve::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  /* Status indicators */
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--tactical-green);
+    box-shadow: 0 0 10px var(--tactical-green-glow);
+  }
+
+  .status-dot-warning {
+    background: var(--tactical-orange);
+    box-shadow: 0 0 10px var(--tactical-orange-glow);
+    animation: pulse-warning 1.5s ease-in-out infinite;
+  }
+
+  .status-dot-error {
+    background: var(--tactical-red);
+    box-shadow: 0 0 10px var(--tactical-red-glow);
+    animation: pulse-error 1s ease-in-out infinite;
+  }
+
+  .status-dot-inactive {
+    background: #444;
+    box-shadow: none;
+  }
+
+  /* HUD corner brackets */
+  .hud-brackets {
+    position: relative;
+  }
+
+  .hud-brackets::before,
+  .hud-brackets::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--tactical-cyan);
+    border-style: solid;
+  }
+
+  .hud-brackets::before {
+    top: 0;
+    left: 0;
+    border-width: 2px 0 0 2px;
+  }
+
+  .hud-brackets::after {
+    bottom: 0;
+    right: 0;
+    border-width: 0 2px 2px 0;
+  }
+
+  /* Targeting reticle */
+  .targeting-reticle {
+    position: relative;
+  }
+
+  .targeting-reticle::before {
+    content: '+';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--tactical-cyan);
+    font-size: 24px;
+    text-shadow: 0 0 10px var(--tactical-cyan-glow);
+    opacity: 0.5;
+  }
+
+  /* Data grid lines */
+  .grid-overlay {
+    background-image: 
+      linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Pulsing animation */
+  @keyframes pulse-cyan {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 10px var(--tactical-cyan-glow);
+    }
+    50% {
+      opacity: 0.5;
+      box-shadow: 0 0 20px var(--tactical-cyan-glow);
+    }
+  }
+
+  @keyframes pulse-green {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 10px var(--tactical-green-glow);
+    }
+    50% {
+      opacity: 0.5;
+      box-shadow: 0 0 20px var(--tactical-green-glow);
+    }
+  }
+
+  @keyframes pulse-warning {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes pulse-error {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  @keyframes scanline {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100vh);
+    }
+  }
+
+  .animate-pulse-cyan {
+    animation: pulse-cyan 2s ease-in-out infinite;
+  }
+
+  .animate-pulse-green {
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+
+  .animate-scanline {
+    animation: scanline 8s linear infinite;
+  }
+
+  /* Monospace data display */
+  .mono-data {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* Tactical scrollbar */
+  .tactical-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .tactical-scrollbar::-webkit-scrollbar-track {
+    background: var(--tactical-bg-secondary);
+  }
+
+  .tactical-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--tactical-border-bright);
+    border-radius: 3px;
+  }
+
+  .tactical-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--tactical-cyan);
+  }
+
+  /* Switch toggle styling */
+  .tactical-switch {
+    position: relative;
+    width: 44px;
+    height: 22px;
+    background: var(--tactical-bg-tertiary);
+    border: 1px solid var(--tactical-border);
+    border-radius: 11px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tactical-switch.active {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--tactical-cyan);
+    box-shadow: 0 0 10px var(--tactical-cyan-glow);
+  }
+
+  .tactical-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: var(--tactical-text-dim);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .tactical-switch.active::after {
+    left: 24px;
+    background: var(--tactical-cyan);
+    box-shadow: 0 0 10px var(--tactical-cyan-glow);
+  }
+
+  /* Slider styling */
+  .tactical-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--tactical-bg-tertiary);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  .tactical-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--tactical-cyan);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--tactical-cyan-glow);
+  }
+
+  /* Timeline scrubber */
+  .timeline-track {
+    position: relative;
+    height: 6px;
+    background: var(--tactical-bg-tertiary);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .timeline-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--tactical-cyan), var(--tactical-green));
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--tactical-cyan-glow);
+  }
+
+  .timeline-marker {
+    position: absolute;
+    top: -4px;
+    width: 2px;
+    height: 14px;
+    background: var(--tactical-cyan);
+    box-shadow: 0 0 5px var(--tactical-cyan-glow);
+  }
+
+  /* Layer card styling */
+  .layer-card {
+    background: rgba(26, 26, 36, 0.6);
+    border: 1px solid var(--tactical-border);
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .layer-card:hover {
+    border-color: var(--tactical-border-bright);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+  }
+
+  .layer-card.active {
+    border-color: var(--tactical-cyan);
+    box-shadow: 0 0 20px var(--tactical-cyan-glow);
+  }
+
+  /* Button styling */
+  .tactical-button {
+    padding: 8px 16px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid var(--tactical-cyan);
+    border-radius: 4px;
+    color: var(--tactical-cyan);
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tactical-button:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 20px var(--tactical-cyan-glow);
+  }
+
+  .tactical-button.active {
+    background: var(--tactical-cyan);
+    color: var(--tactical-bg);
+  }
+
+  /* Globe container */
+  .globe-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Coordinate display */
+  .coord-display {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background: rgba(10, 10, 15, 0.9);
+    border: 1px solid var(--tactical-border);
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    color: var(--tactical-cyan);
+    text-shadow: 0 0 5px var(--tactical-cyan-glow);
+    z-index: 20;
+  }
+
+  /* Night vision overlay */
+  .night-vision-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: 
+      radial-gradient(ellipse at center, transparent 0%, rgba(0, 50, 0, 0.3) 100%);
+    mix-blend-mode: multiply;
+    z-index: 200;
+  }
+
+  /* Thermal overlay */
+  .thermal-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 0, 255, 0.1) 100%
+    );
+    z-index: 200;
+  }
+}
+
+/* Cesium specific overrides */
+.cesium-viewer {
+  background: var(--tactical-bg) !important;
+}
+
+.cesium-viewer-bottom {
+  display: none !important;
+}
+
+.cesium-widget-credits {
+  display: none !important;
+}
+
+/* Post-processing shader styles */
+.shader-crt {
+  filter: contrast(1.2) saturate(0.8);
+}
+
+.shader-night-vision {
+  filter: brightness(1.2) contrast(1.4) sepia(1) saturate(5) hue-rotate(50deg);
+}
+
+.shader-thermal {
+  filter: grayscale(1) contrast(1.5);
 }
