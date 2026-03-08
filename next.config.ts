@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
     
     return config;
   },
+  // Add empty turbopack config to silence the warning
+  turbopack: {},
   // Headers for Cesium static files
   async headers() {
     return [
