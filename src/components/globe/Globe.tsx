@@ -1,17 +1,24 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import * as Cesium from 'cesium';
+import {
+  Viewer,
+  Ion,
+  Color,
+  PostProcessStage,
+  Cartesian3,
+  Math as CesiumMath,
+} from 'cesium';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 interface GlobeProps {
   visualMode: 'normal' | 'crt' | 'nightVision' | 'thermal';
-  onViewerReady?: (viewer: Cesium.Viewer) => void;
+  onViewerReady?: (viewer: Viewer) => void;
 }
 
 export default function Globe({ visualMode, onViewerReady }: GlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const viewerRef = useRef<Cesium.Viewer | null>(null);
+  const viewerRef = useRef<Viewer | null>(null);
   const isLoadedRef = useRef(false);
   const visualModeRef = useRef(visualMode);
 
@@ -21,7 +28,7 @@ export default function Globe({ visualMode, onViewerReady }: GlobeProps) {
   }, [visualMode]);
 
   // Post-processing effect application
-  const applyVisualEffect = useCallback((mode: string, viewer: Cesium.Viewer) => {
+  const applyVisualEffect = useCallback((mode: string, viewer: Viewer) => {
     const scene = viewer.scene;
 
     // Remove existing post-process stages
@@ -29,7 +36,7 @@ export default function Globe({ visualMode, onViewerReady }: GlobeProps) {
 
     if (mode === 'normal') {
       // Default view - no additional effects
-      scene.backgroundColor = Cesium.Color.fromCssColorString('#000000');
+      scene.backgroundColor = Color.fromCssColorString('#000000');
       return;
     }
 
@@ -171,7 +178,7 @@ export default function Globe({ visualMode, onViewerReady }: GlobeProps) {
     }
 
     if (fragmentShader) {
-      const stage = new Cesium.PostProcessStage({
+      const stage = new PostProcessStage({
         fragmentShader,
         uniforms,
       });
@@ -184,57 +191,61 @@ export default function Globe({ visualMode, onViewerReady }: GlobeProps) {
     if (!containerRef.current || viewerRef.current) return;
 
     // Set Cesium Ion access token
-    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlYTQxMjVhYy1hNDJjLTRhNDEtODI0ZC05Y2IyN2JhMzVjNjUiLCJpZCI6MjU5LCJpYXQiOjE3MzQwNTI5MjV9.SdVVzxh3L6HKcMk_xYzZ-8GwZf3NbBKwxGjLhXqFYKI';
+    Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlYTQxMjVhYy1hNDJjLTRhNDEtODI0ZC05Y2IyN2JhMzVjNjUiLCJpZCI6MjU5LCJpYXQiOjE3MzQwNTI5MjV9.SdVVzxh3L6HKcMk_xYzZ-8GwZf3NbBKwxGjLhXqFYKI';
 
-    try {
-      const viewer = new Cesium.Viewer(containerRef.current, {
-        terrainProvider: Cesium.createWorldTerrain(),
-        baseLayerPicker: false,
-        geocoder: false,
-        homeButton: false,
-        sceneModePicker: false,
-        navigationHelpButton: false,
-        animation: false,
-        timeline: false,
-        fullscreenButton: false,
-        vrButton: false,
-        infoBox: true,
-        selectionIndicator: true,
-        shadows: true,
-        shouldAnimate: true,
-      });
+    const initViewer = async () => {
+      try {
+        // Create viewer without terrain for simplicity
+        const viewer = new Viewer(containerRef.current!, {
+          baseLayerPicker: false,
+          geocoder: false,
+          homeButton: false,
+          sceneModePicker: false,
+          navigationHelpButton: false,
+          animation: false,
+          timeline: false,
+          fullscreenButton: false,
+          vrButton: false,
+          infoBox: true,
+          selectionIndicator: true,
+          shadows: true,
+          shouldAnimate: true,
+        });
 
-      // Enable lighting based on sun position
-      viewer.scene.globe.enableLighting = true;
+        // Enable lighting based on sun position
+        viewer.scene.globe.enableLighting = true;
 
-      // Set initial camera position
-      viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(-74.006, 40.7128, 20000000),
-        orientation: {
-          heading: 0,
-          pitch: -Cesium.Math.PI_OVER_TWO,
-          roll: 0,
-        },
-        duration: 0,
-      });
+        // Set initial camera position
+        viewer.camera.flyTo({
+          destination: Cartesian3.fromDegrees(-74.006, 40.7128, 20000000),
+          orientation: {
+            heading: 0,
+            pitch: -CesiumMath.PI_OVER_TWO,
+            roll: 0,
+          },
+          duration: 0,
+        });
 
-      // Add atmosphere effects
-      viewer.scene.skyAtmosphere.show = true;
-      viewer.scene.fog.enabled = true;
-      viewer.scene.fog.density = 0.0001;
+        // Add atmosphere effects
+        viewer.scene.skyAtmosphere.show = true;
+        viewer.scene.fog.enabled = true;
+        viewer.scene.fog.density = 0.0001;
 
-      viewerRef.current = viewer;
-      isLoadedRef.current = true;
-      
-      // Apply initial visual effect
-      applyVisualEffect(visualModeRef.current, viewer);
-      
-      if (onViewerReady) {
-        onViewerReady(viewer);
+        viewerRef.current = viewer;
+        isLoadedRef.current = true;
+        
+        // Apply initial visual effect
+        applyVisualEffect(visualModeRef.current, viewer);
+        
+        if (onViewerReady) {
+          onViewerReady(viewer);
+        }
+      } catch (error) {
+        console.error('Failed to initialize Cesium:', error);
       }
-    } catch (error) {
-      console.error('Failed to initialize Cesium:', error);
-    }
+    };
+
+    initViewer();
 
     return () => {
       if (viewerRef.current) {
